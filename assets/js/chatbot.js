@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v55 root-relative-paths");
+  console.log("[Kairox] chatbot loaded: v70 leadVariables-fix");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -24,6 +24,8 @@
     retellSdkUrl: sharedSettings.retell && sharedSettings.retell.sdkUrl ? sharedSettings.retell.sdkUrl : defaults.retellSdkUrl
   };
   const config = Object.assign({}, defaults, sharedChatConfig, window.KairoxChatConfig || {});
+  // v69: force confirmed live chat webhook. This prevents any older inline/page config from overriding chat to a stale URL.
+  config.webhook = "https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/leads";
   config.logo = config.logo && config.logo.includes("kairox-logo.svg") ? "/assets/img/kairox-mark.svg" : config.logo;
 
   const sessionKey = "kx_session";
@@ -93,6 +95,7 @@
   function extractReply(data) {
     if (!data) return "";
     if (typeof data === "string") return data.trim();
+
     if (Array.isArray(data)) {
       for (const item of data) {
         const found = extractReply(item);
@@ -101,18 +104,48 @@
       return "";
     }
 
-    const keys = ["output", "reply", "message", "answer", "response", "text", "content", "result"];
-    for (const key of keys) {
+    const directKeys = [
+      "output",
+      "reply",
+      "message",
+      "answer",
+      "response",
+      "text",
+      "content",
+      "result",
+      "aiReply",
+      "chatReply",
+      "assistant",
+      "assistantReply"
+    ];
+
+    for (const key of directKeys) {
       if (typeof data[key] === "string" && data[key].trim()) return data[key].trim();
     }
 
-    const wrappers = ["json", "body", "data", "payload"];
+    // Common OpenAI / n8n / LangChain response shapes.
+    if (data.choices && Array.isArray(data.choices)) {
+      for (const choice of data.choices) {
+        const found = extractReply(choice && (choice.message || choice.delta || choice.text || choice));
+        if (found) return found;
+      }
+    }
+
+    if (data.generations && Array.isArray(data.generations)) {
+      for (const generationGroup of data.generations) {
+        const found = extractReply(generationGroup);
+        if (found) return found;
+      }
+    }
+
+    const wrappers = ["json", "body", "data", "payload", "item", "result", "response", "message"];
     for (const wrapper of wrappers) {
-      if (data[wrapper]) {
+      if (data[wrapper] && data[wrapper] !== data) {
         const found = extractReply(data[wrapper]);
         if (found) return found;
       }
     }
+
     return "";
   }
 
@@ -143,9 +176,11 @@
         <div class="kx-ribbon-buttons">
           <a class="kx-float-btn kx-float-call" href="#voice-call" data-kx-call="true" data-kx-retell-call="true" aria-label="Talk to Zara voice agent">
             <span class="kx-float-icon"><i class="bi bi-telephone-outbound-fill"></i></span>
+            <span class="kx-float-label">Call</span>
           </a>
-          <button class="kx-float-btn kx-float-chat" type="button" aria-label="Open Kairox chat assistant">
+          <button class="kx-float-btn kx-float-chat" type="button" data-kx-chat="true" aria-label="Open Kairox chat assistant">
             <span class="kx-float-icon"><i class="bi bi-chat-dots-fill"></i></span>
+            <span class="kx-float-label">Chat</span>
           </button>
         </div>
       </div>
@@ -288,6 +323,13 @@
         ribbonButtons.style.setProperty("visibility", "visible", "important");
         ribbonButtons.style.setProperty("pointer-events", expanded ? "auto" : "none", "important");
       }
+
+      [chatButton, callButton].forEach((button) => {
+        if (!button) return;
+        button.style.setProperty("pointer-events", expanded ? "auto" : "none", "important");
+        button.style.setProperty("position", "relative", "important");
+        button.style.setProperty("z-index", "3", "important");
+      });
     }
 
     function expandRibbon(event) {
@@ -491,32 +533,54 @@
       }, 150);
     }
 
+    function leadVariables() {
+      const lead = state.lead || {};
+      return {
+        name: String(lead.name || ""),
+        phone: String(lead.phone || ""),
+        email: String(lead.email || ""),
+        company: String(lead.company || "")
+      };
+    }
+
     function ensureLeadFormVisible() {
       if (!isLeadComplete() && !messages.querySelector("[data-kx-lead-form='true']")) appendLeadForm();
       updateLeadFormMode();
     }
 
     async function postLeadCapture(intent) {
-      const leadPayload = {
-        eventType: "lead_capture",
-        intent: intent || state.pendingAction || "chat",
-        sessionId,
-        lead: leadVariables(),
-        page: window.location.href,
-        source: "kairox-website-chat",
-        channel: "website",
-        submittedAt: new Date().toISOString()
-      };
       try {
+        const lead = leadVariables();
+        const leadPayload = {
+          eventType: "lead_capture",
+          intent: intent || state.pendingAction || "chat",
+          sessionId,
+          lead,
+          name: lead.name || "",
+          phone: lead.phone || "",
+          email: lead.email || "",
+          company: lead.company || "",
+          page: window.location.href,
+          source: "kairox-website-chat",
+          channel: "website",
+          submittedAt: new Date().toISOString()
+        };
+
+        const body = new URLSearchParams();
+        Object.keys(leadPayload).forEach((key) => {
+          const value = leadPayload[key];
+          body.set(key, typeof value === "object" ? JSON.stringify(value) : String(value || ""));
+        });
+
         await fetch(config.webhook, {
           method: "POST",
           mode: "cors",
           credentials: "omit",
           redirect: "follow",
-          headers: { "Content-Type": "application/json", "Accept": "application/json, text/plain, */*" },
-          body: JSON.stringify(leadPayload)
+          body
         });
       } catch (error) {
+        // Lead capture must never stop the visitor from using chat/call.
         console.warn("[Kairox] lead capture webhook warning", error);
       }
     }
@@ -601,35 +665,130 @@
       updateLeadUi();
     }
 
-    async function postToWebhook(text) {
-      const payload = {
-        message: text,
-        sessionId,
-        lead: leadVariables(),
-        page: window.location.href,
-        source: "kairox-website-chat",
-        channel: "website",
-        submittedAt: new Date().toISOString()
-      };
-
-      const response = await fetch(config.webhook, {
-        method: "POST",
-        mode: "cors",
-        credentials: "omit",
-        redirect: "follow",
-        headers: { "Content-Type": "application/json", "Accept": "application/json, text/plain, */*" },
-        body: JSON.stringify(payload)
-      });
-
+    async function readWebhookResponse(response) {
       const contentType = response.headers.get("content-type") || "";
       let data = "";
-      if (contentType.includes("application/json")) data = await response.json();
-      else {
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
         const raw = await response.text();
         try { data = JSON.parse(raw); } catch { data = raw; }
       }
-      if (!response.ok && !extractReply(data)) throw new Error("Webhook HTTP " + response.status);
       return data;
+    }
+
+    function buildChatPayload(text) {
+      const lead = leadVariables();
+      const submittedAt = new Date().toISOString();
+      return {
+        message: text,
+        sessionId,
+        name: lead.name || "",
+        phone: lead.phone || "",
+        email: lead.email || "",
+        company: lead.company || "",
+        lead,
+        page: window.location.href,
+        source: "kairox-website-chat",
+        channel: "website",
+        submittedAt
+      };
+    }
+
+    function payloadToSearchParams(payload) {
+      const params = new URLSearchParams();
+      Object.keys(payload).forEach((key) => {
+        const value = payload[key];
+        params.set(key, typeof value === "object" ? JSON.stringify(value) : String(value || ""));
+      });
+      return params;
+    }
+
+    function submitWebhookViaHiddenForm(endpoint, payload) {
+      return new Promise((resolve) => {
+        try {
+          const frameName = "kx_chat_webhook_frame_" + Date.now();
+          const iframe = document.createElement("iframe");
+          iframe.name = frameName;
+          iframe.style.display = "none";
+          iframe.setAttribute("aria-hidden", "true");
+
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = endpoint;
+          form.target = frameName;
+          form.enctype = "application/x-www-form-urlencoded";
+          form.style.display = "none";
+
+          Object.keys(payload).forEach((key) => {
+            const inputEl = document.createElement("input");
+            inputEl.type = "hidden";
+            inputEl.name = key;
+            const value = payload[key];
+            inputEl.value = typeof value === "object" ? JSON.stringify(value) : String(value || "");
+            form.appendChild(inputEl);
+          });
+
+          iframe.addEventListener("load", () => {
+            setTimeout(() => {
+              iframe.remove();
+              form.remove();
+            }, 1200);
+            resolve(true);
+          }, { once: true });
+
+          document.body.appendChild(iframe);
+          document.body.appendChild(form);
+          form.submit();
+
+          // Resolve even when browser does not fire load for cross-origin form target.
+          setTimeout(() => {
+            iframe.remove();
+            form.remove();
+            resolve(true);
+          }, 1600);
+        } catch (error) {
+          console.warn("[Kairox] hidden form webhook fallback failed", error);
+          resolve(false);
+        }
+      });
+    }
+
+    async function postToWebhook(text) {
+      const endpoint = "https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/leads";
+      const payload = buildChatPayload(text);
+      const formPayload = payloadToSearchParams(payload);
+
+      console.log("[Kairox] POST chat webhook:", endpoint, payload);
+
+      // Direct POST first: this is the correct production n8n method for the active POST webhook.
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          mode: "cors",
+          credentials: "omit",
+          redirect: "follow",
+          body: formPayload
+        });
+
+        const data = await readWebhookResponse(response);
+
+        if (!response.ok && !extractReply(data)) {
+          throw new Error("Webhook HTTP " + response.status + ": " + JSON.stringify(data).slice(0, 300));
+        }
+
+        console.log("[Kairox] Chat webhook response received", data);
+        return data;
+      } catch (error) {
+        console.warn("[Kairox] readable POST to chat webhook failed. Trying hidden form execution fallback.", error);
+      }
+
+      // Hidden form fallback: this bypasses fetch/CORS and should still create an n8n execution.
+      // It cannot read the AI response due browser cross-origin rules, so n8n still needs CORS/Respond-to-Webhook
+      // for live replies. But it proves whether the active POST webhook receives browser submissions.
+      await submitWebhookViaHiddenForm(endpoint, payload);
+
+      throw new Error("Readable chat webhook POST failed. A hidden POST fallback was submitted for n8n execution diagnostics.");
     }
 
     async function sendMessage(value) {
@@ -657,7 +816,7 @@
       } catch (error) {
         console.error("[Kairox] chat webhook connection error", error);
         removeTypingIndicator();
-        addMessage("assistant", "I could not load the live AI reply from the webhook. Please check the connection and try again.");
+        addMessage("assistant", "The live chat workflow did not return a readable AI reply yet. Please check the browser Console/Network response or use the Call button for immediate voice assistance.");
       } finally {
         removeTypingIndicator();
         setSending(false);
@@ -1067,6 +1226,31 @@
         if (event.key === "Enter" || event.key === " ") run(event);
       }, false);
     }
+
+    let lastChatRibbonOpenAt = 0;
+
+    function handleChatRibbonTrigger(event) {
+      const target = event.target && event.target.closest ? event.target.closest("[data-kx-chat='true'], .kx-float-chat") : null;
+      if (!target || !actions.contains(target)) return;
+
+      const now = Date.now();
+      if (now - lastChatRibbonOpenAt < 500) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+        }
+        return;
+      }
+
+      lastChatRibbonOpenAt = now;
+      requestChatStart(event);
+    }
+
+    // Capture-phase safety binding for the Chat icon. This does not move or restyle the ribbon;
+    // it only ensures the Chat trigger opens the lead/chat panel reliably.
+    actions.addEventListener("pointerup", handleChatRibbonTrigger, true);
+    actions.addEventListener("click", handleChatRibbonTrigger, true);
 
     bindRibbonToggleButton(toggleButton);
     bindOpenButton(chatButton, requestChatStart);

@@ -1,0 +1,13 @@
+/* Kairox v65 — Chat button click reliability only. No position changes. */
+.kx-action-ribbon .kx-float-chat,
+.kx-action-ribbon .kx-float-chat *,
+.kx-action-ribbon .kx-float-call,
+.kx-action-ribbon .kx-float-call * {
+  pointer-events: auto !important;
+}
+
+.kx-action-ribbon .kx-float-chat,
+.kx-action-ribbon .kx-float-call {
+  position: relative !important;
+  z-index: 3 !important;
+}

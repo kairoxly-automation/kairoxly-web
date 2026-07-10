@@ -86,4 +86,3 @@ The frontend sends form submissions as POST parameters and as query parameters f
 - New Sales Presentations for Prospects feature.
 - New pages: `trainings.html` and `sales-presentations.html`.
 - Central navigation/footer solution links are controlled through `assets/js/kairox-settings.js`.
-"# kairoxly-web" 
