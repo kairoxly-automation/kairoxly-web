@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kairox Chat Test Page | Noindex</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial;
+    background: #f5f5f5;
+  }
+
+  /* FLOAT BUTTON */
+  .chat-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #075e54;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 9999;
+  }
+
+  /* CHAT PANEL */
+  .chat-panel {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 380px;
+    height: 520px;
+    background: #efeae2;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+  }
+
+  /* HEADER */
+  .header {
+    background: #075e54;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .close {
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  /* CHAT AREA */
+  .messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .msg {
+    max-width: 75%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    word-wrap: break-word;
+  }
+
+  .user {
+    align-self: flex-end;
+    background: #dcf8c6;
+    border-bottom-right-radius: 0;
+  }
+
+  .bot {
+    align-self: flex-start;
+    background: white;
+    border-bottom-left-radius: 0;
+  }
+
+  .time {
+    font-size: 10px;
+    color: gray;
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  /* INPUT */
+  .input-area {
+    display: flex;
+    padding: 8px;
+    background: #f0f0f0;
+    gap: 8px;
+  }
+
+  input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+  }
+
+  button.send {
+    background: #075e54;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  /* MOBILE */
+  @media (max-width: 500px) {
+    .chat-panel {
+      width: 95%;
+      right: 2.5%;
+      height: 70vh;
+    }
+  }
+</style>
+<meta content="noindex, nofollow" name="robots"/><meta content="Internal Kairox chat testing page. Not intended for search indexing." name="description"/> <link href="assets/css/ribbon-final-fix.css?v=kx-mobile-inline-v13" rel="stylesheet"/>
+<link href="assets/css/ribbon-mobile-align-v11.css?v=kx-mobile-inline-v13" rel="stylesheet"/>
+<link href="assets/css/ribbon-mobile-collapsed-v12.css?v=kx-mobile-inline-v13" rel="stylesheet"/>
+<link href="assets/css/ribbon-mobile-inline-v13.css?v=kx-mobile-inline-v13" rel="stylesheet"/>
+<link href="assets/css/chat-button-fix-v14.css?v=kx-chat-window-v15" rel="stylesheet"/>
+<link href="assets/css/chat-window-final-v15.css?v=kx-chat-window-v15" rel="stylesheet"/>
+<link href="assets/css/chat-stable-v16.css?v=kx-chat-stable-v16" rel="stylesheet"/>
+<link href="assets/css/chat-typing-dots-v20.css?v=kx-chat-typing-v21" rel="stylesheet"/>
+<link href="assets/css/chat-typing-inline-v21.css?v=kx-chat-typing-v22" rel="stylesheet"/>
+<link href="assets/css/chat-typing-after-text-v22.css?v=kx-chat-typing-v23" rel="stylesheet"/>
+<link href="assets/css/chat-typing-polished-v23.css?v=kx-chat-typing-v24" rel="stylesheet"/>
+<link href="assets/css/chat-typing-final-v24.css?v=kx-chat-typing-v25" rel="stylesheet"/>
+<link href="assets/css/chat-typing-hard-inline-v25.css?v=kx-chat-typing-v26" rel="stylesheet"/>
+<link href="assets/css/chat-typing-animation-v26.css?v=kx-chat-typing-v27" rel="stylesheet"/>
+<link href="assets/css/chat-typing-js-animated-v27.css?v=kx-chat-refresh-v28" rel="stylesheet"/>
+<link href="assets/css/chat-refresh-v28.css?v=kx-chat-lead-v30" rel="stylesheet"/>
+<link href="assets/css/chat-single-message-field-v29.css?v=kx-chat-lead-v30" rel="stylesheet"/>
+<link href="assets/css/chat-lead-capture-v30.css?v=kx-chat-lead-v30" rel="stylesheet"/>
+<link href="assets/css/chat-lead-form-v31.css?v=kx-chat-form-top-v33" rel="stylesheet"/>
+<link href="assets/css/chat-welcome-form-v32.css?v=kx-chat-welcome-form-v32" rel="stylesheet"/>
+<link href="assets/css/chat-form-top-v33.css?v=kx-chat-remove-popup-icons-v35" rel="stylesheet"/>
+<link href="assets/css/chat-no-empty-greeting-v34.css?v=kx-chat-remove-popup-icons-v35" rel="stylesheet"/>
+<link href="assets/css/chat-remove-popup-icons-v35.css?v=kx-chat-mark-logo-v36" rel="stylesheet"/>
+<link href="assets/css/chat-mark-logo-v36.css?v=kx-chat-retell-widget-v38" rel="stylesheet"/>
+<link href="assets/css/chat-retell-widget-v38.css?v=kx-chat-retell-widget-v38" rel="stylesheet"/>
+<link href="assets/css/chat-retell-open-v39.css?v=kx-chat-retell-direct-v41" rel="stylesheet"/>
+<link href="assets/css/chat-form-gates-call-v40.css?v=kx-chat-retell-direct-v41" rel="stylesheet"/>
+<link href="assets/css/chat-retell-direct-v41.css?v=kx-ribbon-toggle-v42" rel="stylesheet"/>
+<link href="assets/css/ribbon-toggle-v42.css?v=kx-ribbon-visible-v43" rel="stylesheet"/>
+<link href="assets/css/ribbon-visible-v43.css?v=kx-ribbon-aligned-v44" rel="stylesheet"/>
+<link href="assets/css/ribbon-aligned-v44.css?v=kx-ribbon-gapless-v45" rel="stylesheet"/>
+<link href="assets/css/ribbon-gapless-v45.css?v=kx-retell-minimal-params-v47" rel="stylesheet"/>
+<link href="assets/css/retell-params-v46.css?v=kx-retell-params-v46" rel="stylesheet"/>
+<link href="assets/css/retell-minimal-params-v47.css?v=kx-retell-websdk-v48" rel="stylesheet"/>
+<link href="assets/css/retell-websdk-v48.css?v=kx-retell-v53" rel="stylesheet"/>
+<link href="assets/css/retell-endpoint-cors-v49.css?v=kx-retell-v53" rel="stylesheet"/>
+<link href="assets/css/retell-n8n-form-fields-v52.css?v=kx-retell-v53" rel="stylesheet"/>
+<link href="assets/css/retell-loading-central-v53.css?v=kx-root-relative-v55" rel="stylesheet"/>
+<link href="assets/css/features-v54.css?v=kx-customer-focused-v59" rel="stylesheet"/>
+      <link href="assets/css/ribbon-billion-polish-v63.css?v=kx-ribbon-polish-v63" rel="stylesheet"/>
+         <link href="assets/css/ribbon-smooth-v64.css?v=kx-ribbon-smooth-v64" rel="stylesheet"/>
+   </head>
+<body>
+<!-- FLOAT BUTTON -->
+<div class="chat-btn" onclick="toggleChat()">💬</div>
+<!-- CHAT PANEL -->
+<div class="chat-panel" id="chatPanel">
+<div class="header">
+<div class="header-title">
+<div class="avatar"></div>
+      n8n AI Assistant
+    </div>
+<div class="close" onclick="toggleChat()">✖</div>
+</div>
+<div class="messages" id="messages"></div>
+<div class="input-area">
+<input id="input" placeholder="Type a message..." type="text"/>
+<button class="send" onclick="sendMessage()">➤</button>
+</div>
+</div>
+<script>
+  const webhookUrl = "https://molly-preestival-irina.ngrok-free.app/webhook/f7b6e59a-4498-491d-baaf-f6652f66d59a/chat";
+
+  function toggleChat() {
+    const panel = document.getElementById("chatPanel");
+    panel.style.display = panel.style.display === "flex" ? "none" : "flex";
+  }
+
+  function timeNow() {
+    return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function addMessage(text, type) {
+    const messages = document.getElementById("messages");
+
+    const div = document.createElement("div");
+    div.classList.add("msg", type);
+
+    div.innerHTML = `
+      ${text}
+      <div class="time">${timeNow()}</div>
+    `;
+
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    input.value = "";
+
+    try {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+
+      const reply = data.output || data.message || "No response";
+      addMessage(reply, "bot");
+
+    } catch (err) {
+      addMessage("Error connecting to server", "bot");
+      console.error(err);
+    }
+  }
+
+  document.getElementById("input").addEventListener("keydown", function(e){
+    if (e.key === "Enter") sendMessage();
+  });
+</script>
+</body>
+</html>
