@@ -197,7 +197,7 @@
           <div class="kx-chat-avatar"><img src="${escapeHtml(config.logo)}" alt=""></div>
           <div>
             <div class="kx-chat-title">${escapeHtml(config.brand)}</div>
-            <div class="kx-chat-status"><span></span> Online AI advisor</div>
+            <div class="kx-chat-status"><span></span> Zara - AI Automation Consultant</div>
           </div>
         </div>
         <div class="kx-chat-tools">

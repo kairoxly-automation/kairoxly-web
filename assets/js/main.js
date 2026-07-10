@@ -96,7 +96,7 @@
   });
   if (savedLanguage !== 'en') translatePage(savedLanguage);
 
-  const LEAD_WEBHOOK_URL = window.KAIROX_LEAD_WEBHOOK_URL || 'https://molly-preestival-irina.ngrok-free.app/webhook/kairox';
+  const LEAD_WEBHOOK_URL = window.KAIROX_LEAD_WEBHOOK_URL || 'https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead';
 
   document.querySelectorAll('[data-kx-form]').forEach((form) => {
     form.addEventListener('submit', async (e) => {
@@ -104,6 +104,7 @@
       const alert = form.querySelector('[data-form-alert]');
       const btn = form.querySelector('button[type="submit"]');
       const data = Object.fromEntries(new FormData(form).entries());
+      const endpoint = form.getAttribute('data-kx-webhook-url') || form.getAttribute('action') || LEAD_WEBHOOK_URL;
       const isLocalFilePreview = location.protocol === 'file:';
       data.source_page = isLocalFilePreview ? (location.pathname.split('/').pop() || 'local-preview') : location.pathname;
       data.source_url = isLocalFilePreview ? 'local-preview' : location.href;
@@ -111,6 +112,7 @@
       data.timestamp = new Date().toISOString();
       data.source = 'kairox_website';
       data.notification_email = data.notification_email || 'kairoxly@gmail.com';
+      data.webhook_endpoint = endpoint;
 
       const body = new URLSearchParams();
       Object.entries(data).forEach(([key, value]) => body.append(key, value == null ? '' : String(value)));
@@ -125,7 +127,7 @@
         // Use no-cors because the n8n webhook may receive the lead successfully
         // but the browser can still block the response if CORS headers are not returned.
         // Sending URLSearchParams keeps the payload as form parameters in n8n's body.
-        await fetch(LEAD_WEBHOOK_URL, {
+        await fetch(endpoint, {
           method: 'POST',
           mode: 'no-cors',
           credentials: 'omit',
