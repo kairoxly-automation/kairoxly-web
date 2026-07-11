@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v70 leadVariables-fix");
+  console.log("[Kairox] chatbot loaded: v71 lead-capture-noop");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -197,7 +197,7 @@
           <div class="kx-chat-avatar"><img src="${escapeHtml(config.logo)}" alt=""></div>
           <div>
             <div class="kx-chat-title">${escapeHtml(config.brand)}</div>
-            <div class="kx-chat-status"><span></span> Zara - AI Automation Consultant</div>
+            <div class="kx-chat-status"><span></span> Online AI advisor</div>
           </div>
         </div>
         <div class="kx-chat-tools">
@@ -549,40 +549,17 @@
     }
 
     async function postLeadCapture(intent) {
-      try {
-        const lead = leadVariables();
-        const leadPayload = {
-          eventType: "lead_capture",
-          intent: intent || state.pendingAction || "chat",
-          sessionId,
-          lead,
-          name: lead.name || "",
-          phone: lead.phone || "",
-          email: lead.email || "",
-          company: lead.company || "",
-          page: window.location.href,
-          source: "kairox-website-chat",
-          channel: "website",
-          submittedAt: new Date().toISOString()
-        };
-
-        const body = new URLSearchParams();
-        Object.keys(leadPayload).forEach((key) => {
-          const value = leadPayload[key];
-          body.set(key, typeof value === "object" ? JSON.stringify(value) : String(value || ""));
-        });
-
-        await fetch(config.webhook, {
-          method: "POST",
-          mode: "cors",
-          credentials: "omit",
-          redirect: "follow",
-          body
-        });
-      } catch (error) {
-        // Lead capture must never stop the visitor from using chat/call.
-        console.warn("[Kairox] lead capture webhook warning", error);
-      }
+      // v71: Do not call the live chat webhook on lead-form submission.
+      // The /webhook/leads workflow is the AI chat workflow and expects an actual message.
+      // Sending a lead_capture event without a customer message can make n8n return 500.
+      // Lead details are still sent together with the visitor's first real chat message
+      // and with the Retell voice-call request.
+      console.log("[Kairox] lead form captured locally; webhook will be called on message/call.", {
+        intent: intent || state.pendingAction || "chat",
+        sessionId,
+        lead: leadVariables()
+      });
+      return true;
     }
 
     function renderHistory() {

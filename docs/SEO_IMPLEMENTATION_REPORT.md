@@ -3,7 +3,7 @@
 Date: 2026-07-04
 
 ## Domain used for canonical URLs
-https://agentevo.online
+https://kairoxly.com
 
 ## Updated SEO elements
 - Unique SEO title tags for all public HTML pages.
@@ -39,6 +39,6 @@ No developer can honestly guarantee a permanent 100% SEO score across every audi
 2. Submit sitemap.xml.
 3. Verify indexing with URL Inspection.
 4. Add/verify Google Business Profile if serving local UAE customers.
-5. Replace canonical domain if the final production domain is not https://agentevo.online.
+5. Replace canonical domain if the final production domain is not https://kairoxly.com.
 6. Test structured data using Google Rich Results Test.
 7. Run PageSpeed Insights after deployment and optimize server/CDN/image delivery if needed.

@@ -1,5 +1,5 @@
 // Kairox bilingual support. English remains the canonical SEO language; Arabic is switched client-side with RTL layout.
-window.KAIROX_LEAD_WEBHOOK_URL = 'https://molly-preestival-irina.ngrok-free.app/webhook/kairox';
+window.KAIROX_LEAD_WEBHOOK_URL = 'https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead';
 window.KAIROX_I18N = { ar: {
   "Home": "الرئيسية",
   "Industries": "القطاعات",

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kairoxly.com/sitemap.xml
+Host: kairoxly.com

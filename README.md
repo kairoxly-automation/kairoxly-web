@@ -58,7 +58,7 @@ Expected response:
 
 ## Contact and WhatsApp settings
 - WhatsApp links are configured to `+971 52 285 5000` using `https://wa.me/971522855000`.
-- Contact and newsletter forms submit to the n8n webhook `https://molly-preestival-irina.ngrok-free.app/webhook/kairox` using POST parameters and query parameters. The workflow should send notifications to `kairoxly@gmail.com`.
+- Contact and newsletter forms submit to the n8n webhook `https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead` using POST parameters and query parameters. The workflow should send notifications to `kairoxly@gmail.com`.
 - Form payload includes form_type, name/email/phone fields where present, source_page, page_title, timestamp, source and notification_email.
 
 ## Production edits needed
@@ -76,7 +76,7 @@ The site includes an English/Arabic language selector, RTL layout support, Arabi
 
 ## n8n lead webhook
 
-Webhook: `https://molly-preestival-irina.ngrok-free.app/webhook/kairox`
+Webhook: `https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead`
 
 The frontend sends form submissions as POST parameters and as query parameters for easy mapping in n8n Webhook nodes. Configure your n8n workflow to send the received data to `kairoxly@gmail.com`.
 
