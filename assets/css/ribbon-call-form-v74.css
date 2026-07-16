@@ -1,0 +1,53 @@
+/* =========================================================
+   KAIROX RIBBON CALL FORM V74
+   - Phone icon opens lead form first before voice call.
+   - Removes floating Call/Chat tooltip labels that overlapped the toggle.
+   - Keeps expand/collapse button single-click responsive and visually above ribbon buttons.
+   ========================================================= */
+
+.kx-floating-actions {
+  overflow: visible !important;
+}
+
+.kx-ribbon-toggle {
+  z-index: 2147483640 !important;
+  pointer-events: auto !important;
+}
+
+.kx-action-ribbon,
+.kx-ribbon-buttons {
+  z-index: 2147482500 !important;
+}
+
+.kx-action-ribbon .kx-float-label,
+.kx-action-ribbon .kx-float-btn .kx-float-label,
+.kx-action-ribbon .kx-float-btn:hover .kx-float-label,
+.kx-action-ribbon .kx-float-btn:focus .kx-float-label,
+.kx-action-ribbon .kx-float-btn:focus-visible .kx-float-label {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  content: none !important;
+}
+
+.kx-action-ribbon .kx-float-btn::before,
+.kx-action-ribbon .kx-float-btn::after,
+.kx-action-ribbon .kx-float-call::before,
+.kx-action-ribbon .kx-float-call::after,
+.kx-action-ribbon .kx-float-chat::before,
+.kx-action-ribbon .kx-float-chat::after {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  content: none !important;
+  pointer-events: none !important;
+}
+
+.kx-action-ribbon .kx-float-btn {
+  place-items: center !important;
+}
+
+.kx-lead-form-card .kx-lead-submit {
+  cursor: pointer !important;
+}

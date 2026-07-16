@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v71 lead-capture-noop");
+  console.log("[Kairox] chatbot loaded: v74 call-form-ribbon-fix");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -174,7 +174,7 @@
       </button>
       <div class="kx-action-ribbon">
         <div class="kx-ribbon-buttons">
-          <a class="kx-float-btn kx-float-call" href="#voice-call" data-kx-call="true" data-kx-retell-call="true" aria-label="Talk to Zara voice agent">
+          <a class="kx-float-btn kx-float-call" href="#" data-kx-call="true" data-kx-retell-call="true" data-kx-require-lead-form="true" aria-label="Start voice call form">
             <span class="kx-float-icon"><i class="bi bi-telephone-outbound-fill"></i></span>
             <span class="kx-float-label">Call</span>
           </a>
@@ -364,7 +364,10 @@
         if (event.stopImmediatePropagation) event.stopImmediatePropagation();
       }
 
-      if (state.isRibbonVisible) {
+      const expandedOnScreen = actions.classList.contains("is-expanded") || actions.getAttribute("data-kx-ribbon-state") === "expanded";
+      state.isRibbonVisible = expandedOnScreen;
+
+      if (expandedOnScreen) {
         collapseRibbon();
       } else {
         expandRibbon();
@@ -410,9 +413,12 @@
       if (event) {
         event.preventDefault();
         event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
       }
       closeDirectCallPanel();
       state.isOpen = false;
+      state.isRibbonVisible = false;
+      clearTimeout(state.hideTimer);
       panel.classList.remove("open");
       panel.setAttribute("aria-hidden", "true");
       panel.style.removeProperty("display");
@@ -420,6 +426,7 @@
       panel.style.removeProperty("opacity");
       panel.style.removeProperty("pointer-events");
       chatButton.classList.remove("active");
+      syncRibbon();
       applyMobileLayout();
     }
 
@@ -499,6 +506,12 @@
       const leadForm = wrapper.querySelector(".kx-lead-form");
       const errorBox = wrapper.querySelector(".kx-lead-form-error");
       const firstInput = wrapper.querySelector("input");
+
+      const existingLead = leadVariables();
+      Object.keys(existingLead).forEach((key) => {
+        const field = leadForm.querySelector("[name='" + key + "']");
+        if (field && existingLead[key]) field.value = existingLead[key];
+      });
 
       leadForm.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -1079,8 +1092,8 @@
       setVoiceStatus("Voice call ended.");
     }
 
-    function openDirectVoiceCall() {
-      startRetellWebCall();
+    function openDirectVoiceCall(event) {
+      requestVoiceCall(event);
     }
 
     function requestVoiceCall(event) {
@@ -1131,18 +1144,22 @@
       }
 
       state.pendingAction = "call";
+      closeDirectCallPanel();
+
+      // Phone/ribbon calls must always pass through the lead form first.
+      // Existing details are prefilled, then the submitted values are sent
+      // to the Retell access-token webhook as separate form fields.
+      if (isLeadComplete()) state.leadStep = "form";
+
       openPanel();
+      renderHistory();
+      ensureLeadFormVisible();
+      updateLeadFormMode();
 
-      if (!isLeadComplete()) {
-        ensureLeadFormVisible();
-        updateLeadFormMode();
-        const firstField = messages.querySelector("[data-kx-lead-form='true'] input");
-        if (firstField) firstField.focus();
-        return;
+      const firstField = messages.querySelector("[data-kx-lead-form='true'] input");
+      if (firstField) {
+        try { firstField.focus({ preventScroll: true }); } catch { firstField.focus(); }
       }
-
-      postLeadCapture("call");
-      startRetellWebCall(event);
     }
 
     function bindRibbonToggleButton(element) {
@@ -1152,7 +1169,7 @@
 
       const run = function (event) {
         const now = Date.now();
-        if (now - lastToggleAt < 650) {
+        if (now - lastToggleAt < 180) {
           if (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -1228,6 +1245,32 @@
     // it only ensures the Chat trigger opens the lead/chat panel reliably.
     actions.addEventListener("pointerup", handleChatRibbonTrigger, true);
     actions.addEventListener("click", handleChatRibbonTrigger, true);
+
+    let lastCallRibbonOpenAt = 0;
+
+    function handleCallRibbonTrigger(event) {
+      const target = event.target && event.target.closest ? event.target.closest("[data-kx-call='true'], [data-kx-retell-call='true'], .kx-float-call") : null;
+      if (!target || !actions.contains(target)) return;
+
+      const now = Date.now();
+      if (now - lastCallRibbonOpenAt < 500) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+        }
+        return;
+      }
+
+      lastCallRibbonOpenAt = now;
+      requestVoiceCall(event);
+    }
+
+    // Capture-phase safety binding for the Call icon.
+    // It prevents the phone button from starting Retell directly and routes it through the lead form first.
+    actions.addEventListener("pointerup", handleCallRibbonTrigger, true);
+    actions.addEventListener("click", handleCallRibbonTrigger, true);
+
 
     bindRibbonToggleButton(toggleButton);
     bindOpenButton(chatButton, requestChatStart);
