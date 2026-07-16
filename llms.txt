@@ -37,3 +37,16 @@
 - [Customer Support AI Agents](https://kairoxly.com/blog/customer-support-ai-agents.html)
 - [AI Governance for SMEs](https://kairoxly.com/blog/ai-governance-safety-uae-smes.html)
 - [AI Receptionist & Voice Agents](https://kairoxly.com/blog/ai-receptionist-voice-agent-uae.html)
+
+## Case studies
+
+- [Real Estate Lead Follow-Up Automation](https://kairoxly.com/case-studies/real-estate-lead-follow-up.html)
+- [AI Receptionist for Clinic Calls and Appointment Requests](https://kairoxly.com/case-studies/clinic-ai-receptionist.html)
+- [Client Intake Automation for a Consultancy Firm](https://kairoxly.com/case-studies/professional-services-client-intake.html)
+- [WhatsApp Support and Order Inquiry Automation](https://kairoxly.com/case-studies/retail-whatsapp-support.html)
+- [Booking Inquiry Automation for Hospitality and Events](https://kairoxly.com/case-studies/hospitality-booking-inquiries.html)
+- [Course Inquiry and Student Support Automation](https://kairoxly.com/case-studies/education-training-inquiries.html)
+
+## About and trust
+
+- [About Kairox AI](https://kairoxly.com/about.html)

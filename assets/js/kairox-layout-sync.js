@@ -6,13 +6,16 @@
   function prefix() {
     const path = (window.location && window.location.pathname ? window.location.pathname : "").replace(/\\/g, "/");
     const parts = path.split("/").filter(Boolean);
-    const file = parts.length ? parts[parts.length - 1] : "";
-    const folder = parts.length > 1 ? parts[parts.length - 2] : "";
-    const oneLevelFolders = ["industries", "blog"];
+    const oneLevelFolders = ["industries", "blog", "case-studies"];
 
-    if (oneLevelFolders.includes(folder)) return "../";
+    // Works for /case-studies/example.html, /case-studies/example/,
+    // /blog/example.html and /industries/example.html.
+    if (parts.length >= 2 && oneLevelFolders.includes(parts[parts.length - 2])) return "../";
 
-    // When a local file is opened, do not count computer folder segments as website depth.
+    // Also catch direct folder URLs where the browser resolves relative links from that folder.
+    if (parts.length === 1 && oneLevelFolders.includes(parts[0])) return "../";
+
+    // When a local file is opened from the root folder, do not count computer folder segments.
     return "";
   }
 
@@ -44,6 +47,39 @@
     if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return href;
     return prefix() + cleanLocalPath(href);
   }
+
+
+  function needsRootPrefix(href) {
+    if (!href) return false;
+    const value = String(href);
+    if (/^(https?:|mailto:|tel:|#|javascript:|data:|blob:)/i.test(value) || value.startsWith("//") || value.startsWith("../") || value.startsWith("./")) return false;
+    const clean = cleanLocalPath(value);
+    return /^(index|about|ai-automation-uae-guide|ai-employees|blog|case-studies|contact|industries|pricing|sales-presentations|solutions|trainings)\.html(?:[?#].*)?$/i.test(clean)
+      || /^(industries|blog|case-studies)\//i.test(clean);
+  }
+
+  function fixSubfolderLinks() {
+    const pre = prefix();
+    if (!pre) return;
+    document.querySelectorAll("a[href]").forEach((a) => {
+      const href = a.getAttribute("href") || "";
+      if (needsRootPrefix(href)) a.setAttribute("href", pre + cleanLocalPath(href));
+    });
+  }
+
+  function installSubfolderLinkGuard() {
+    if (window.__KairoxSubfolderLinkGuardV94) return;
+    window.__KairoxSubfolderLinkGuardV94 = true;
+    document.addEventListener("click", (event) => {
+      const a = event.target && event.target.closest ? event.target.closest("a[href]") : null;
+      if (!a) return;
+      const pre = prefix();
+      if (!pre) return;
+      const href = a.getAttribute("href") || "";
+      if (needsRootPrefix(href)) a.setAttribute("href", pre + cleanLocalPath(href));
+    }, true);
+  }
+
 
   function setActiveNav() {
     const current = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
@@ -118,6 +154,8 @@
 
     renderSolutionNavigation();
     renderFooterSolutions();
+    fixSubfolderLinks();
+    installSubfolderLinkGuard();
 
     document.querySelectorAll("nav .navbar-brand img").forEach((img) => {
       img.src = toAsset(brand.logoMark || "/assets/img/kairox-mark.svg");

@@ -4,19 +4,19 @@
     <loc>https://kairoxly.com/about.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.82</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/ai-automation-uae-guide.html</loc>
     <lastmod>2026-07-16</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.92</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/ai-employees.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/blog/ai-agent-trends-2026.html</loc>
@@ -70,19 +70,55 @@
     <loc>https://kairoxly.com/blog.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.88</priority>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/clinic-ai-receptionist.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/education-training-inquiries.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/hospitality-booking-inquiries.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/professional-services-client-intake.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/real-estate-lead-follow-up.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
+  </url>
+  <url>
+    <loc>https://kairoxly.com/case-studies/retail-whatsapp-support.html</loc>
+    <lastmod>2026-07-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.74</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/case-studies.html</loc>
     <lastmod>2026-07-16</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
     <priority>0.82</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/contact.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/</loc>
@@ -142,30 +178,30 @@
     <loc>https://kairoxly.com/industries.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/pricing.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/sales-presentations.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/solutions.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://kairoxly.com/trainings.html</loc>
     <lastmod>2026-07-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.80</priority>
   </url>
 </urlset>
