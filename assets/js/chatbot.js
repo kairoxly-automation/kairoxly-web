@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v80 balanced-performance-visuals");
+  console.log("[Kairox] chatbot loaded: v81 abovefold-lcp-fix");
 
   const defaults = {
     brand: "Kairox AI Assistant",
