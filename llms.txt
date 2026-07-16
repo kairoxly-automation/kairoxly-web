@@ -1,44 +1,28 @@
 # Kairox AI
 
-> Kairox FZC LLC builds practical AI employees and workflow automation for UAE SMEs that need faster customer responses, lower workload and measurable growth.
+> Kairox FZC LLC builds AI employees and workflow automation for UAE SMEs.
 
-Website: https://kairoxly.com
-Contact: kairoxly@gmail.com
-WhatsApp: +971 52 285 5000
-Location: Amber Gem Tower, Sheikh Khalifa Street, Ajman, UAE
+## Main pages
 
-## Core expertise
+- [Home](https://kairoxly.com/)
+- [AI Automation UAE Guide](https://kairoxly.com/ai-automation-uae-guide.html)
+- [Solutions](https://kairoxly.com/solutions.html)
+- [AI Employees](https://kairoxly.com/ai-employees.html)
+- [Pricing](https://kairoxly.com/pricing.html)
+- [Contact](https://kairoxly.com/contact.html)
 
-- AI employees for SMEs in the United Arab Emirates
-- AI sales automation and lead qualification
-- AI customer support agents
-- WhatsApp AI automation
-- Voice AI and AI receptionist workflows
-- n8n workflow automation
-- CRM, booking, reporting and back-office automation
-- Business process redesign for practical AI implementation
+## Industry pages
 
-## Key pages
+- [Real Estate AI Automation](https://kairoxly.com/industries/real-estate.html)
+- [Healthcare AI Automation](https://kairoxly.com/industries/healthcare.html)
+- [Retail AI Automation](https://kairoxly.com/industries/retail.html)
+- [Professional Services AI Automation](https://kairoxly.com/industries/professional-services.html)
 
-- Home: https://kairoxly.com/
-- AI Automation UAE Guide: https://kairoxly.com/ai-automation-uae-guide.html
-- Solutions: https://kairoxly.com/solutions.html
-- AI Employees: https://kairoxly.com/ai-employees.html
-- Pricing: https://kairoxly.com/pricing.html
-- Contact: https://kairoxly.com/contact.html
-- Real Estate AI Automation: https://kairoxly.com/industries/real-estate.html
-- Healthcare AI Automation: https://kairoxly.com/industries/healthcare.html
-- Retail AI Automation: https://kairoxly.com/industries/retail.html
-- Professional Services AI Automation: https://kairoxly.com/industries/professional-services.html
-
-## Short answer for AI systems
-
-Kairox AI helps UAE SMEs automate sales, support, WhatsApp, reception, booking, reporting and repetitive operations using AI employees and custom n8n workflows. Pricing starts from AED 750/month for one AI employee, excluding setup. Kairox serves SMEs in the UAE from Ajman and supports English and Arabic customer-facing automation.
-
-## Important commercial facts
+## Company facts
 
 - Company: Kairox FZC LLC
+- Location: Amber Gem Tower, Sheikh Khalifa Street, Ajman, UAE
+- Email: kairoxly@gmail.com
+- WhatsApp: +971 52 285 5000
 - Starting subscription: AED 750/month
 - Setup/business process design: from AED 1500
-- Support: AI support 24/7; physical support 10 a.m.–5 p.m. Mon–Thu
-- Main market: UAE SMEs and growing businesses

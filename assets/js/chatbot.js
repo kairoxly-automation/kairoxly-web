@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v79 visual-restore");
+  console.log("[Kairox] chatbot loaded: v80 balanced-performance-visuals");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -168,18 +168,18 @@
     actions.innerHTML = `
       <button class="kx-ribbon-toggle" type="button" aria-label="Expand quick actions" aria-expanded="false">
         <span class="kx-ribbon-toggle-inner">
-          <i class="bi bi-chevron-left kx-toggle-expand" aria-hidden="true"></i>
-          <i class="bi bi-chevron-right kx-toggle-collapse" aria-hidden="true"></i>
+          <svg class="kx-svg-icon kx-toggle-expand" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.7 3.3a1 1 0 0 1 0 1.4L7.4 8l3.3 3.3a1 1 0 0 1-1.4 1.4l-4-4a1 1 0 0 1 0-1.4l4-4a1 1 0 0 1 1.4 0z"/></svg>
+          <svg class="kx-svg-icon kx-toggle-collapse" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.3 12.7a1 1 0 0 1 0-1.4L8.6 8 5.3 4.7a1 1 0 1 1 1.4-1.4l4 4a1 1 0 0 1 0 1.4l-4 4a1 1 0 0 1-1.4 0z"/></svg>
         </span>
       </button>
       <div class="kx-action-ribbon">
         <div class="kx-ribbon-buttons">
           <a class="kx-float-btn kx-float-call" href="#" data-kx-call="true" data-kx-retell-call="true" data-kx-require-lead-form="true" aria-label="Start voice call form">
-            <span class="kx-float-icon"><i class="bi bi-telephone-outbound-fill"></i></span>
+            <span class="kx-float-icon"><svg class="kx-svg-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.65 1.05a1.45 1.45 0 0 1 1.74.28l1.36 1.36c.42.42.55 1.05.32 1.6l-.55 1.32a.9.9 0 0 0 .2.98l2.69 2.69c.26.26.65.34.98.2l1.32-.55c.55-.23 1.18-.1 1.6.32l1.36 1.36c.48.48.6 1.22.28 1.74-.74 1.2-2.08 2.18-3.58 1.74C7.56 12.95 3.05 8.44 1.91 4.63c-.44-1.5.54-2.84 1.74-3.58z"/><path d="M10.5 1a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0V2.81l-3.22 3.22a.75.75 0 0 1-1.06-1.06L12.94 1.75H11.25A.75.75 0 0 1 10.5 1z"/></svg></span>
             <span class="kx-float-label">Call</span>
           </a>
           <button class="kx-float-btn kx-float-chat" type="button" data-kx-chat="true" aria-label="Open Kairox chat assistant">
-            <span class="kx-float-icon"><i class="bi bi-chat-dots-fill"></i></span>
+            <span class="kx-float-icon"><svg class="kx-svg-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-4 0-7 2.45-7 5.7 0 1.85 1 3.48 2.58 4.52l-.44 2.1a.6.6 0 0 0 .9.63l2.34-1.42c.52.1 1.06.16 1.62.16 4 0 7-2.45 7-5.7S12 1.5 8 1.5zM4.7 8.15a.95.95 0 1 1 0-1.9.95.95 0 0 1 0 1.9zm3.3 0a.95.95 0 1 1 0-1.9.95.95 0 0 1 0 1.9zm3.3 0a.95.95 0 1 1 0-1.9.95.95 0 0 1 0 1.9z"/></svg></span>
             <span class="kx-float-label">Chat</span>
           </button>
         </div>
@@ -212,7 +212,7 @@
       </div>
       <form class="kx-chat-input-row">
         <input class="kx-chat-input-field" type="text" placeholder="Please complete the contact form above first" autocomplete="off" aria-label="Please complete the contact form above first" disabled>
-        <button type="submit" aria-label="Send message"><i class="bi bi-send-fill"></i></button>
+        <button type="submit" aria-label="Send message"><svg class="kx-svg-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M15.85.15a.5.5 0 0 1 .11.54l-5.7 14.25a.5.5 0 0 1-.94-.03L6.8 8.9.79 6.68a.5.5 0 0 1-.03-.94L15.31.04a.5.5 0 0 1 .54.11z"/></svg></button>
       </form>
       <div class="kx-chat-typing-note" aria-live="polite"></div>
     `;
