@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v81 abovefold-lcp-fix");
+  console.log("[Kairox] chatbot loaded: v84 ribbon-overlay-fix");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -230,6 +230,36 @@
     const typingNote = panel.querySelector(".kx-chat-typing-note");
     const quickArea = panel.querySelector(".kx-chat-quick");
 
+    function assetPrefix() {
+      const script = document.querySelector("script[src*='assets/js/chatbot.js']");
+      const src = script ? (script.getAttribute("src") || "") : "";
+      const idx = src.indexOf("assets/js/");
+      return idx >= 0 ? src.slice(0, idx) : "";
+    }
+
+
+    function forcePanelPlacement() {
+      panel.style.setProperty("position", "fixed", "important");
+      panel.style.setProperty("right", isMobile() ? "12px" : "22px", "important");
+      panel.style.setProperty("left", isMobile() ? "12px" : "auto", "important");
+      panel.style.setProperty("bottom", isMobile() ? "14px" : "24px", "important");
+      panel.style.setProperty("top", "auto", "important");
+      panel.style.setProperty("width", isMobile() ? "auto" : "min(410px, calc(100vw - 24px))", "important");
+      panel.style.setProperty("max-height", isMobile() ? "calc(100vh - 28px)" : "min(720px, calc(100vh - 48px))", "important");
+      panel.style.setProperty("transform", "none", "important");
+      panel.style.setProperty("z-index", "2147483000", "important");
+    }
+
+    function loadWidgetStyles() {
+      if (document.querySelector("link[data-kx-widget-css='v82'], link[href*='kairox-widget-v82.min.css']")) return;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = assetPrefix() + "assets/css/kairox-widget-v82.min.css?v=kx-mobile-lcp-v82";
+      link.setAttribute("data-kx-widget-css", "v82");
+      document.head.appendChild(link);
+      if (window.KairoxLoadIcons) window.KairoxLoadIcons();
+    }
+
     function applyMobileLayout() {
       if (!isMobile()) {
         actions.style.removeProperty("transform");
@@ -375,6 +405,8 @@
     }
 
     function openPanel(event) {
+      loadWidgetStyles();
+      forcePanelPlacement();
       if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -382,9 +414,10 @@
       }
 
       state.isOpen = true;
-      state.isRibbonVisible = true;
+      state.isRibbonVisible = false;
       clearTimeout(state.hideTimer);
       syncRibbon();
+      document.body.classList.add("kx-chat-panel-open");
 
       panel.classList.add("open");
       panel.setAttribute("aria-hidden", "false");
@@ -418,6 +451,7 @@
       closeDirectCallPanel();
       state.isOpen = false;
       state.isRibbonVisible = false;
+      document.body.classList.remove("kx-chat-panel-open");
       clearTimeout(state.hideTimer);
       panel.classList.remove("open");
       panel.setAttribute("aria-hidden", "true");
@@ -1097,6 +1131,8 @@
     }
 
     function requestVoiceCall(event) {
+      loadWidgetStyles();
+      forcePanelPlacement();
       if (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -1120,6 +1156,8 @@
     }
 
     function requestChatStart(event) {
+      loadWidgetStyles();
+      forcePanelPlacement();
       if (event) {
         event.preventDefault();
         event.stopPropagation();

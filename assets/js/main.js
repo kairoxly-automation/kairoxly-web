@@ -28,19 +28,7 @@
       }
     });
   });
-
-  if (window.AOS) {
-    AOS.init({
-      duration: 950,
-      easing: 'ease-out-cubic',
-      once: true,
-      offset: 72,
-      mirror: false,
-      anchorPlacement: 'top-bottom'
-    });
-  }
-
-  function getTextNodes(root) {
+function getTextNodes(root) {
     const nodes = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {

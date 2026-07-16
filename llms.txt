@@ -26,3 +26,14 @@
 - WhatsApp: +971 52 285 5000
 - Starting subscription: AED 750/month
 - Setup/business process design: from AED 1500
+
+## Knowledge Hub guides
+
+- [AI Automation UAE: 2026 SME Guide](https://kairoxly.com/blog/ai-automation-uae.html)
+- [What Are AI Employees?](https://kairoxly.com/blog/ai-employees-uae.html)
+- [WhatsApp AI Automation](https://kairoxly.com/blog/whatsapp-ai-agents.html)
+- [AI Automation ROI](https://kairoxly.com/blog/business-automation-roi.html)
+- [AI Agent Trends 2026](https://kairoxly.com/blog/ai-agent-trends-2026.html)
+- [Customer Support AI Agents](https://kairoxly.com/blog/customer-support-ai-agents.html)
+- [AI Governance for SMEs](https://kairoxly.com/blog/ai-governance-safety-uae-smes.html)
+- [AI Receptionist & Voice Agents](https://kairoxly.com/blog/ai-receptionist-voice-agent-uae.html)
