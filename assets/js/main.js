@@ -19,6 +19,16 @@
   window.addEventListener('scroll', setScrolled, { passive: true });
   setScrolled();
 
+  document.querySelectorAll('.navbar-toggler').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const targetSelector = btn.getAttribute('data-bs-target') || btn.getAttribute('data-target');
+      const target = targetSelector ? document.querySelector(targetSelector) : document.querySelector('.navbar-collapse');
+      if (!target) return;
+      const open = target.classList.toggle('show');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', function (e) {
       const target = document.querySelector(this.getAttribute('href'));
@@ -91,10 +101,10 @@
       const value = e.target.value;
       setStored('kairox_lang', value);
       languageSelectors.forEach((s) => { s.value = value; });
-      translatePage(value);
+      if (typeof translatePage === 'function') translatePage(value);
     });
   });
-  if (savedLanguage !== 'en') translatePage(savedLanguage);
+  if (savedLanguage !== 'en' && typeof translatePage === 'function') translatePage(savedLanguage);
 
   const LEAD_WEBHOOK_URL = window.KAIROX_LEAD_WEBHOOK_URL || 'https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead';
 

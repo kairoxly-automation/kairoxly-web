@@ -24,7 +24,7 @@
     retellSdkUrl: sharedSettings.retell && sharedSettings.retell.sdkUrl ? sharedSettings.retell.sdkUrl : defaults.retellSdkUrl
   };
   const config = Object.assign({}, defaults, sharedChatConfig, window.KairoxChatConfig || {});
-  // v69: force confirmed live chat webhook. This prevents any older inline/page config from overriding chat to a stale URL.
+
   config.webhook = "https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/leads";
   config.logo = config.logo && config.logo.includes("kairox-logo.svg") ? "/assets/img/kairox-mark.svg" : config.logo;
 
@@ -123,7 +123,6 @@
       if (typeof data[key] === "string" && data[key].trim()) return data[key].trim();
     }
 
-    // Common OpenAI / n8n / LangChain response shapes.
     if (data.choices && Array.isArray(data.choices)) {
       for (const choice of data.choices) {
         const found = extractReply(choice && (choice.message || choice.delta || choice.text || choice));
@@ -256,8 +255,6 @@
 
       applyMobileLayout();
 
-      // Final hard layout override. The previous build changed the arrow but the
-      // ribbon body stayed misaligned; this makes the toggle and body one unit.
       actions.style.setProperty("position", "fixed", "important");
       actions.style.setProperty("top", "50%", "important");
       actions.style.setProperty("right", "0", "important");
@@ -562,11 +559,7 @@
     }
 
     async function postLeadCapture(intent) {
-      // v71: Do not call the live chat webhook on lead-form submission.
-      // The /webhook/leads workflow is the AI chat workflow and expects an actual message.
-      // Sending a lead_capture event without a customer message can make n8n return 500.
-      // Lead details are still sent together with the visitor's first real chat message
-      // and with the Retell voice-call request.
+
       console.log("[Kairox] lead form captured locally; webhook will be called on message/call.", {
         intent: intent || state.pendingAction || "chat",
         sessionId,
@@ -731,7 +724,6 @@
           document.body.appendChild(form);
           form.submit();
 
-          // Resolve even when browser does not fire load for cross-origin form target.
           setTimeout(() => {
             iframe.remove();
             form.remove();
@@ -751,7 +743,6 @@
 
       console.log("[Kairox] POST chat webhook:", endpoint, payload);
 
-      // Direct POST first: this is the correct production n8n method for the active POST webhook.
       try {
         const response = await fetch(endpoint, {
           method: "POST",
@@ -773,9 +764,6 @@
         console.warn("[Kairox] readable POST to chat webhook failed. Trying hidden form execution fallback.", error);
       }
 
-      // Hidden form fallback: this bypasses fetch/CORS and should still create an n8n execution.
-      // It cannot read the AI response due browser cross-origin rules, so n8n still needs CORS/Respond-to-Webhook
-      // for live replies. But it proves whether the active POST webhook receives browser submissions.
       await submitWebhookViaHiddenForm(endpoint, payload);
 
       throw new Error("Readable chat webhook POST failed. A hidden POST fallback was submitted for n8n execution diagnostics.");
@@ -1146,9 +1134,6 @@
       state.pendingAction = "call";
       closeDirectCallPanel();
 
-      // Phone/ribbon calls must always pass through the lead form first.
-      // Existing details are prefilled, then the submitted values are sent
-      // to the Retell access-token webhook as separate form fields.
       if (isLeadComplete()) state.leadStep = "form";
 
       openPanel();
@@ -1241,8 +1226,6 @@
       requestChatStart(event);
     }
 
-    // Capture-phase safety binding for the Chat icon. This does not move or restyle the ribbon;
-    // it only ensures the Chat trigger opens the lead/chat panel reliably.
     actions.addEventListener("pointerup", handleChatRibbonTrigger, true);
     actions.addEventListener("click", handleChatRibbonTrigger, true);
 
@@ -1266,11 +1249,8 @@
       requestVoiceCall(event);
     }
 
-    // Capture-phase safety binding for the Call icon.
-    // It prevents the phone button from starting Retell directly and routes it through the lead form first.
     actions.addEventListener("pointerup", handleCallRibbonTrigger, true);
     actions.addEventListener("click", handleCallRibbonTrigger, true);
-
 
     bindRibbonToggleButton(toggleButton);
     bindOpenButton(chatButton, requestChatStart);
