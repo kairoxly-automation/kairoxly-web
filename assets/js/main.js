@@ -19,16 +19,6 @@
   window.addEventListener('scroll', setScrolled, { passive: true });
   setScrolled();
 
-  document.querySelectorAll('.navbar-toggler').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const targetSelector = btn.getAttribute('data-bs-target') || btn.getAttribute('data-target');
-      const target = targetSelector ? document.querySelector(targetSelector) : document.querySelector('.navbar-collapse');
-      if (!target) return;
-      const open = target.classList.toggle('show');
-      btn.setAttribute('aria-expanded', String(open));
-    });
-  });
-
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', function (e) {
       const target = document.querySelector(this.getAttribute('href'));
@@ -101,10 +91,10 @@
       const value = e.target.value;
       setStored('kairox_lang', value);
       languageSelectors.forEach((s) => { s.value = value; });
-      if (typeof translatePage === 'function') translatePage(value);
+      translatePage(value);
     });
   });
-  if (savedLanguage !== 'en' && typeof translatePage === 'function') translatePage(savedLanguage);
+  if (savedLanguage !== 'en') translatePage(savedLanguage);
 
   const LEAD_WEBHOOK_URL = window.KAIROX_LEAD_WEBHOOK_URL || 'https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/record-lead';
 
@@ -134,7 +124,9 @@
       }
 
       try {
-
+        // Use no-cors because the n8n webhook may receive the lead successfully
+        // but the browser can still block the response if CORS headers are not returned.
+        // Sending URLSearchParams keeps the payload as form parameters in n8n's body.
         await fetch(endpoint, {
           method: 'POST',
           mode: 'no-cors',
@@ -174,6 +166,7 @@
     });
   });
 
+  // Premium pointer micro-interactions for hero, solution and featured AI agent cards.
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!prefersReducedMotion) {
     const tiltCards = document.querySelectorAll('[data-tilt], .agent-card, .hero-card, .pricing-card.featured');
@@ -196,6 +189,7 @@
     });
   }
 
+  // Soft count-up effect for visible stat numbers.
   const stats = document.querySelectorAll('.stat strong, .hero-metric strong, .case-metric strong');
   if ('IntersectionObserver' in window && !prefersReducedMotion) {
     const observer = new IntersectionObserver((entries) => {
