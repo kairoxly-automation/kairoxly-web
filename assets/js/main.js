@@ -124,9 +124,7 @@
       }
 
       try {
-        // Use no-cors because the n8n webhook may receive the lead successfully
-        // but the browser can still block the response if CORS headers are not returned.
-        // Sending URLSearchParams keeps the payload as form parameters in n8n's body.
+
         await fetch(endpoint, {
           method: 'POST',
           mode: 'no-cors',
@@ -166,7 +164,6 @@
     });
   });
 
-  // Premium pointer micro-interactions for hero, solution and featured AI agent cards.
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!prefersReducedMotion) {
     const tiltCards = document.querySelectorAll('[data-tilt], .agent-card, .hero-card, .pricing-card.featured');
@@ -189,7 +186,6 @@
     });
   }
 
-  // Soft count-up effect for visible stat numbers.
   const stats = document.querySelectorAll('.stat strong, .hero-metric strong, .case-metric strong');
   if ('IntersectionObserver' in window && !prefersReducedMotion) {
     const observer = new IntersectionObserver((entries) => {

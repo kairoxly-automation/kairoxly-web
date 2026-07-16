@@ -22,7 +22,7 @@
     },
     retell: {
       agentId: "agent_5ec6dc37c1772b2f9adc74074b",
-      agentVersion: "30",
+      agentVersion: "28",
       sdkUrl: "https://esm.sh/retell-client-js-sdk@2.0.8"
     },
     footer: {
