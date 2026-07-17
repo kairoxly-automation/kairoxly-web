@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v84 ribbon-overlay-fix");
+  console.log("[Kairox] chatbot loaded: v97 direct-chat-url");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -1355,6 +1355,25 @@
     window.addEventListener("resize", applyMobileLayout, { passive: true });
     window.addEventListener("orientationchange", function () { setTimeout(applyMobileLayout, 250); });
 
+
+    function shouldOpenChatFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search || "");
+        const hash = String(window.location.hash || "").replace(/^#/, "").toLowerCase();
+        const queryValues = [
+          params.get("chat"),
+          params.get("open"),
+          params.get("kxchat"),
+          params.get("kairoxChat")
+        ].map((value) => String(value || "").toLowerCase());
+
+        return queryValues.some((value) => ["1", "true", "open", "chat", "start"].includes(value)) ||
+          ["chat", "open-chat", "kairox-chat", "kairox-chat-open", "start-chat"].includes(hash);
+      } catch (error) {
+        return false;
+      }
+    }
+
     window.KairoxChatWidget = {
       open: requestChatStart,
       openCall: requestVoiceCall,
@@ -1371,6 +1390,12 @@
     typingNote.textContent = "";
     renderHistory();
     syncRibbon();
+
+    if (shouldOpenChatFromUrl()) {
+      setTimeout(function () {
+        requestChatStart();
+      }, 120);
+    }
   }
 
   if (document.readyState === "loading") {

@@ -21,7 +21,7 @@ kairox-website/
   assets/js/chatbot.js
   assets/js/calculators.js
   assets/img/*.svg
-  assets/img/*.png
+  assets/img/*.webp
   assets/img/agents/*.svg
   docs/website-strategy.md
   docs/brand-guidelines.md
