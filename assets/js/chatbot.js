@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v98 visual-safe-direct-chat");
+  console.log("[Kairox] chatbot loaded: v112 bot-reply-parser");
 
   const defaults = {
     brand: "Kairox AI Assistant",
@@ -52,7 +52,8 @@
     retellClient: null,
     isVoiceCallActive: false,
     isVoiceCallStarting: false,
-    currentVoiceCallPromise: null
+    currentVoiceCallPromise: null,
+    lastWebhookResponse: null
   };
 
   function escapeHtml(text) {
@@ -92,19 +93,11 @@
     return String(value || "").trim();
   }
 
-  function extractReply(data) {
-    if (!data) return "";
-    if (typeof data === "string") return data.trim();
+  function extractReply(data, userText) {
+    const seen = new WeakSet();
+    const normalizedUserText = String(userText || "").trim();
 
-    if (Array.isArray(data)) {
-      for (const item of data) {
-        const found = extractReply(item);
-        if (found) return found;
-      }
-      return "";
-    }
-
-    const directKeys = [
+    const replyKeys = [
       "output",
       "reply",
       "message",
@@ -116,37 +109,187 @@
       "aiReply",
       "chatReply",
       "assistant",
-      "assistantReply"
+      "assistantReply",
+      "botReply",
+      "Bot Reply",
+      "BotReply",
+      "finalAnswer",
+      "completion",
+      "generatedText"
     ];
 
-    for (const key of directKeys) {
-      if (typeof data[key] === "string" && data[key].trim()) return data[key].trim();
+    const normalizedReplyKeys = new Set(replyKeys.map(normalizeKey));
+
+    function normalizeKey(key) {
+      return String(key || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     }
 
-    // Common OpenAI / n8n / LangChain response shapes.
-    if (data.choices && Array.isArray(data.choices)) {
-      for (const choice of data.choices) {
-        const found = extractReply(choice && (choice.message || choice.delta || choice.text || choice));
+    const wrapperKeys = [
+      "json",
+      "body",
+      "data",
+      "payload",
+      "item",
+      "items",
+      "result",
+      "results",
+      "response",
+      "responses",
+      "message",
+      "messages",
+      "output",
+      "reply",
+      "answer"
+    ];
+
+    const ignoredEchoKeys = new Set([
+      "name",
+      "phone",
+      "email",
+      "company",
+      "sessionid",
+      "sessionId",
+      "page",
+      "source",
+      "channel",
+      "submittedat",
+      "submittedAt",
+      "userquery",
+      "User Query",
+      "webhook",
+      "url",
+      "id",
+      "status",
+      "ok"
+    ]);
+
+    function cleanString(value) {
+      const trimmed = String(value || "").trim();
+      if (!trimmed) return "";
+
+      // Some n8n Respond-to-Webhook nodes return a JSON string rather than a JSON object.
+      if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          const parsedReply = walk(parsed, 0, "");
+          if (parsedReply) return parsedReply;
+        } catch (error) {
+          // Not JSON after all; continue with plain text.
+        }
+      }
+
+      if (normalizedUserText && trimmed === normalizedUserText) return "";
+      if (/^(ok|success|true|null|undefined)$/i.test(trimmed)) return "";
+      return trimmed;
+    }
+
+    function readContentBlocks(value, depth) {
+      if (!Array.isArray(value)) return "";
+      const parts = [];
+      value.forEach((block) => {
+        if (!block) return;
+        if (typeof block === "string") {
+          const found = cleanString(block);
+          if (found) parts.push(found);
+          return;
+        }
+        if (typeof block === "object") {
+          const textValue = block.text || block.content || block.output || block.message;
+          const found = walk(textValue, depth + 1, "content");
+          if (found) parts.push(found);
+        }
+      });
+      return parts.join("\n").trim();
+    }
+
+    function walk(value, depth, keyName) {
+      if (depth > 10 || value === null || value === undefined) return "";
+
+      if (typeof value === "string" || typeof value === "number") {
+        const key = String(keyName || "").toLowerCase();
+        if (ignoredEchoKeys.has(key)) return "";
+        return cleanString(value);
+      }
+
+      if (typeof value !== "object") return "";
+
+      if (seen.has(value)) return "";
+      seen.add(value);
+
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          const found = walk(item, depth + 1, keyName);
+          if (found) return found;
+        }
+        return "";
+      }
+
+      // OpenAI / LangChain / n8n AI Agent common shapes.
+      if (value.choices && Array.isArray(value.choices)) {
+        for (const choice of value.choices) {
+          const found = walk(choice && (choice.message || choice.delta || choice.text || choice), depth + 1, "choices");
+          if (found) return found;
+        }
+      }
+
+      if (value.generations && Array.isArray(value.generations)) {
+        for (const generationGroup of value.generations) {
+          const found = walk(generationGroup, depth + 1, "generations");
+          if (found) return found;
+        }
+      }
+
+      if (value.role === "assistant" && value.content) {
+        const found = Array.isArray(value.content)
+          ? readContentBlocks(value.content, depth + 1)
+          : walk(value.content, depth + 1, "content");
         if (found) return found;
       }
-    }
 
-    if (data.generations && Array.isArray(data.generations)) {
-      for (const generationGroup of data.generations) {
-        const found = extractReply(generationGroup);
-        if (found) return found;
+      // Priority: known reply fields first. If the field is an object, recurse into it.
+      for (const key of replyKeys) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+          const found = Array.isArray(value[key]) && key === "content"
+            ? readContentBlocks(value[key], depth + 1)
+            : walk(value[key], depth + 1, key);
+          if (found) return found;
+        }
       }
-    }
 
-    const wrappers = ["json", "body", "data", "payload", "item", "result", "response", "message"];
-    for (const wrapper of wrappers) {
-      if (data[wrapper] && data[wrapper] !== data) {
-        const found = extractReply(data[wrapper]);
-        if (found) return found;
+      // n8n can return friendly column names such as "Bot Reply".
+      // Match reply keys after removing spaces, punctuation and case.
+      for (const key of Object.keys(value)) {
+        if (normalizedReplyKeys.has(normalizeKey(key))) {
+          const found = walk(value[key], depth + 1, key);
+          if (found) return found;
+        }
       }
+
+      // Then common wrappers.
+      for (const key of wrapperKeys) {
+        if (Object.prototype.hasOwnProperty.call(value, key) && value[key] !== value) {
+          const found = walk(value[key], depth + 1, key);
+          if (found) return found;
+        }
+      }
+
+      // Last resort: scan remaining object fields, but ignore obvious echo/config fields.
+      for (const key of Object.keys(value)) {
+        const lower = key.toLowerCase();
+        const normalized = normalizeKey(key);
+        if (ignoredEchoKeys.has(lower) || ignoredEchoKeys.has(normalized)) continue;
+        if (replyKeys.includes(key) || normalizedReplyKeys.has(normalized) || wrapperKeys.includes(key)) continue;
+        const child = value[key];
+        if (child && typeof child === "object") {
+          const found = walk(child, depth + 1, key);
+          if (found) return found;
+        }
+      }
+
+      return "";
     }
 
-    return "";
+    return walk(data, 0, "");
   }
 
   function resetStoredChatBuffer() {
@@ -779,7 +922,7 @@
     }
 
     async function postToWebhook(text) {
-      const endpoint = "https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/leads";
+      const endpoint = config.webhook || "https://workflows-n8nrunnerpostgresollama-cc30a1-187-127-191-113.sslip.io/webhook/leads";
       const payload = buildChatPayload(text);
       const formPayload = payloadToSearchParams(payload);
 
@@ -792,15 +935,17 @@
           mode: "cors",
           credentials: "omit",
           redirect: "follow",
+          headers: { "Accept": "application/json, text/plain;q=0.9, */*;q=0.8" },
           body: formPayload
         });
 
         const data = await readWebhookResponse(response);
 
-        if (!response.ok && !extractReply(data)) {
+        if (!response.ok && !extractReply(data, text)) {
           throw new Error("Webhook HTTP " + response.status + ": " + JSON.stringify(data).slice(0, 300));
         }
 
+        state.lastWebhookResponse = data;
         console.log("[Kairox] Chat webhook response received", data);
         return data;
       } catch (error) {
@@ -835,8 +980,13 @@
       try {
         const payload = await postToWebhook(text);
         removeTypingIndicator();
-        const reply = extractReply(payload) || "Thanks. I received your message. Please share your business type, team size and the process you want to automate so I can guide you better.";
-        addMessage("assistant", reply);
+        const reply = extractReply(payload, text);
+        if (reply) {
+          addMessage("assistant", reply);
+        } else {
+          console.warn("[Kairox] n8n response did not contain a readable AI reply. Last response:", payload);
+          addMessage("assistant", "The workflow responded, but no readable AI reply field was found. Please set the n8n Respond to Webhook node to return an output, reply, message, answer or response field.");
+        }
       } catch (error) {
         console.error("[Kairox] chat webhook connection error", error);
         removeTypingIndicator();
@@ -1380,7 +1530,8 @@
       close: closePanel,
       toggleRibbon,
       expandRibbon,
-      collapseRibbon
+      collapseRibbon,
+      lastWebhookResponse: function () { return state.lastWebhookResponse; }
     };
 
     state.isOpen = false;
