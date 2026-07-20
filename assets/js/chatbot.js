@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  console.log("[Kairox] chatbot loaded: v97 direct-chat-url");
+  console.log("[Kairox] chatbot loaded: v98 visual-safe-direct-chat");
 
   const defaults = {
     brand: "Kairox AI Assistant",
